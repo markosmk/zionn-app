@@ -1,0 +1,207 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: white;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 215 20.2% 65.1%;
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+
+  .album {
+    @apply border-2 bg-white rounded-lg grid sm:grid-cols-[repeat(5,minmax(100px,1fr))] grid-rows-[repeat(3,minmax(100px,1fr))] min-h-[300px] min-w-[300px] sm:min-w-[500px] overflow-hidden gap-2 p-4 grid-cols-[repeat(3,minmax(100px,1fr))];
+  }
+  .album-item {
+    @apply bg-cover bg-center rounded-lg aspect-square w-full;
+  }
+  .album-item--large {
+    @apply col-[span_2] row-[span_2] [&:nth-of-type(3)]:col-[3] [&:nth-of-type(4)]:row-[2];
+  }
+  /* .album-item:nth-of-type(3) {
+    @apply col-[3] row-[2];
+  } */
+}
+#my-cool-gradient {
+  --color-stop-1: #4225d5;
+  --color-stop-2: #1472b5;
+  --color-stop-3: #158dc8;
+}
+.svg-clipped {
+  -webkit-clip-path: url(#svgPath);
+  clip-path: url(#svgPath);
+}
+
+.page-loading .loading-bounce > * {
+  animation-iteration-count: infinite;
+}
+.loading-bounce > * {
+  animation-duration: 0.75s;
+  animation-name: bounce;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-delay: calc(2 * 0.075s);
+  transform-origin: center center;
+  /* animation-iteration-count: infinite; */
+}
+
+.page-loading .spinner-wave > * {
+  animation-iteration-count: infinite;
+}
+.spinner-wave > * {
+  animation: spinner_wave 0.9s linear 1;
+}
+@keyframes spinner_wave {
+  0%,
+  66.66% {
+    animation-timing-function: cubic-bezier(0.14, 0.73, 0.34, 1);
+    y: 6px;
+    height: 12px;
+  }
+  33.33% {
+    animation-timing-function: cubic-bezier(0.65, 0.26, 0.82, 0.45);
+    y: 1px;
+    height: 22px;
+  }
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    transform: scaleY(1);
+    transform-origin: 50% 50%;
+  }
+  50% {
+    transform: scaleY(0.7);
+    transform-origin: 50% 50%;
+  }
+  100% {
+    transform: scaleY(1);
+    transform-origin: 50% 50%;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scaleY(1);
+    transform-origin: 50% 50%;
+  }
+  50% {
+    transform: scaleY(0.7);
+    transform-origin: 50% 50%;
+  }
+  100% {
+    transform: scaleY(1);
+    transform-origin: 50% 50%;
+  }
+}
+
+.transition-spacing {
+  transition-duration: 0.15s;
+  transition-property: margin, padding;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.transition-dimensions {
+  transition-duration: 0.15s;
+  transition-property: width, height;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cover-thumbnail:before {
+  background-image: inherit;
+  filter: blur(10px);
+}
+.cover-thumbnail:before {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: -1;
+  bottom: 0;
+  left: 5%;
+  width: 90%;
+  height: 5%;
+  border-radius: 100%;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  background-position-y: 100%;
+  background-size: cover;
+}
+.cover-thumbnail:after {
+  padding-top: 100%;
+  min-height: auto;
+  content: "";
+  width: 100%;
+  display: block;
+}
+.album-info > span + span:before,
+.entry-cat li + li:before {
+  display: inline-block;
+  content: "\00B7";
+  color: var(--text-secondary-color);
+  width: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+}
