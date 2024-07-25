@@ -7,14 +7,14 @@ import { buttonVariants } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 import { getCurrentUser } from "@/lib/auth/session"
 import { redirect } from "next/navigation"
-import { AuthSection } from "@/components/auth/auth-section"
+import { ResetPassForm } from "./reset-form"
 
 export const metadata: Metadata = {
-  title: "Iniciar Sesion",
-  description: "Ingresa a tu cuenta y comenza a compartir tus mezclas.",
+  title: "Reestablecer Cuenta",
+  description: "Reestablece tu cuenta en " + process.env.NEXT_PUBLIC_APP_NAME,
 }
 
-export default async function Login() {
+export default async function Verify() {
   const user = await getCurrentUser()
 
   if (user) {
@@ -33,7 +33,7 @@ export default async function Login() {
         </>
       </Link>
 
-      <AuthSection currentContent="login" type="card" />
+      <ResetPassForm />
     </div>
   )
 }
