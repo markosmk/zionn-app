@@ -23,27 +23,37 @@ export const authLoginSchema = z.object({
       const isUsername = usernameRegex.test(value)
       return isEmail || isUsername
     }, MESSAGE.emailOrUsername),
-  password: z
-    .string()
-    .min(1, MESSAGE.required)
-    .min(6, MESSAGE.passwordMin)
-    .max(32, MESSAGE.passwordMax),
+  password: z.string().min(1, MESSAGE.required).min(6, MESSAGE.passwordMin).max(32, MESSAGE.passwordMax),
 })
 
 export const registerSchema = z.object({
-  email: z.string().min(1, MESSAGE.required).email(MESSAGE.email),
-  password: z
-    .string()
-    .min(1, MESSAGE.required)
-    .min(6, MESSAGE.passwordMin)
-    .max(32, MESSAGE.passwordMax),
+  identifier: z.string().min(1, MESSAGE.required).email(MESSAGE.email),
+  password: z.string().min(1, MESSAGE.required).min(6, MESSAGE.passwordMin).max(32, MESSAGE.passwordMax),
   confirmPassword: z.string().min(1, MESSAGE.required).optional(),
 })
 
-export const authRegisterSchema = registerSchema.refine(
-  (data) => data.password === data.confirmPassword,
-  {
-    path: ["confirmPassword"],
-    ...MESSAGE.noMatch,
-  }
-)
+export const authRegisterSchema = registerSchema.refine((data) => data.password === data.confirmPassword, {
+  path: ["confirmPassword"],
+  ...MESSAGE.noMatch,
+})
+
+export const authVerifySchema = z.object({
+  identifier: z.string().min(1, MESSAGE.required).email(MESSAGE.email),
+  code: z.string().min(1, MESSAGE.required).min(6, MESSAGE.passwordMin).max(32, MESSAGE.passwordMax),
+})
+
+export const authForgetPassSchema = z.object({
+  email: z.string().min(1, MESSAGE.required).email(MESSAGE.email),
+})
+
+export const resetPassSchema = z.object({
+  // identifier: z.string().min(1, MESSAGE.required).email(MESSAGE.email),
+  // code: z.string().min(1, MESSAGE.required).email(MESSAGE.email),
+  password: z.string().min(1, MESSAGE.required).min(6, MESSAGE.passwordMin).max(32, MESSAGE.passwordMax),
+  confirmPassword: z.string().min(1, MESSAGE.required).optional(),
+})
+
+export const authResetPassSchema = resetPassSchema.refine((data) => data.password === data.confirmPassword, {
+  path: ["confirmPassword"],
+  ...MESSAGE.noMatch,
+})
