@@ -1,25 +1,23 @@
-import { User } from "next-auth"
+import { UserRole } from "@prisma/client"
+import { type DefaultSession, User } from "next-auth"
 import { JWT } from "next-auth/jwt"
 
-export enum Role {
-  user = "user",
-  admin = "admin",
-}
-
-export interface IUser {
-  role?: Role
-  username?: string | null
+interface ExtendedUser {
+  role?: UserRole
   id?: string | null
 }
 
 declare module "next-auth/jwt" {
-  interface JWT extends IUser {}
+  interface JWT extends ExtendedUser {}
 }
 
 declare module "next-auth" {
-  interface User extends IUser {}
+  interface User extends ExtendedUser {}
+  // not extends IUser because not are optional
   interface Session {
-    user?: User & IUser
-    // use extends to add properties
+    user: {
+      role: UserRole
+      id: string
+    } & DefaultSession["user"]
   }
 }

@@ -1,3 +1,8 @@
+// When change schema
+// 1- npx prisma generate
+// 2- npx prisma migrate reset // to reset all data and add new changes in schema
+// 2- npx prisma db push
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -5,6 +10,12 @@ generator client {
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  MODERATOR
+  USER
 }
 
 model User {
@@ -17,7 +28,7 @@ model User {
   token           String?
   image           String?
   bio             String?
-  role            String?
+  role            UserRole  @default(USER)
   activity        String?
   social          String?
   followingIds    String[]  @db.ObjectId

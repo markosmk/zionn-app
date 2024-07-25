@@ -53,11 +53,9 @@ export const { handlers, auth, signIn, signOut } = nextAuth({
           },
         })
         if (!user || !user.password) throw new InvalidLoginError("Email y/o password incorrectos.")
+
         const pwCorrect = await verifyPassword(user.password, password)
-
         if (!pwCorrect) throw new InvalidLoginError("Email y/o password incorrectos.")
-
-        // if (!user.emailVerified) throw new InvalidLoginError("Email no verificado.")
 
         return user
       },
@@ -65,9 +63,9 @@ export const { handlers, auth, signIn, signOut } = nextAuth({
   ],
   pages: {
     signIn: "/login",
-    error: "/login",
-    // newUser: "/register",
-    // signOut: "/login",
+    error: "/auth/error",
+    // newUser: "/onboarding",
+    // signOut: "/logout",
   },
   session: {
     strategy: "jwt", // default
@@ -87,12 +85,18 @@ export const { handlers, auth, signIn, signOut } = nextAuth({
         })
       }
     },
+    // async createUser(message) {
+    //   const params = {
+    //     name: message.user.name,
+    //     email: message.user.email,
+    //   };
+    //   await sendWelcomeEmail(params);
+    // }
   },
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       if (user && !(user as User).emailVerified && account?.provider === "credentials") {
-        // here send email verified again,
-        // TODO: apply throgle to not send multiple emails
+        // here send email verified again?
         return false
       }
       return true
