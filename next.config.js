@@ -3,14 +3,13 @@ const isProd = process.env.NODE_ENV === "production"
 const nextConfig = {
   // reactStrictMode: false,
   swcMinify: true,
-  // experimental: {
-  //   swcMinify: true,
-  //   appDir: true,
-  //   enableUndici: true,
-  // },
   images: {
     unoptimized: isProd ? false : true,
     domains: ["res.cloudinary.com"],
+  },
+  experimental: {
+    //   swcMinify: true,
+    serverComponentsExternalPackages: ["@node-rs/argon2"],
   },
   async headers() {
     return [
