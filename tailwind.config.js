@@ -1,4 +1,4 @@
-const { fontFamily } = require("tailwindcss/defaultTheme")
+const { fontFamily, fontSize } = require("tailwindcss/defaultTheme")
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: "class",
@@ -18,6 +18,20 @@ module.exports = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        zonna: {
+          DEFAULT: "#0D0E4A",
+          50: "#BEBEF4",
+          100: "#ACADF1",
+          200: "#898BEB",
+          300: "#6668E5",
+          400: "#4346DF",
+          500: "#2427D6",
+          600: "#1E21B3",
+          700: "#181A90",
+          800: "#12146D",
+          900: "#0D0E4A",
+          950: "#090932",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
