@@ -18,6 +18,11 @@ enum UserRole {
   USER
 }
 
+enum TypeEmail {
+  FORGET_PASSWORD
+  VERIFY_ACCOUNT
+}
+
 model User {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   name            String?
@@ -124,9 +129,11 @@ model Session {
   updatedAt DateTime @updatedAt
 }
 
+// Used for forget password and verify email account
 model VerificationToken {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
   identifier String
+  type       TypeEmail
   token      String
   expires    DateTime
 
