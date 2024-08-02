@@ -1,12 +1,12 @@
-import { db } from "@/lib/db"
-import { authForgetPassSchema } from "@/lib/validations/auth"
 import { NextResponse } from "next/server"
-import { resend } from "@/lib/resend"
-import { RecoveryPassEmail } from "@/emails/recovery-pass-email"
 import { nanoid } from "nanoid"
-import { rateLimit } from "@/lib/rate-limit"
+import { TypeEmail } from "@prisma/client"
+
+import { db } from "@/lib/db"
+import { sendRecoveryPassEmail } from "@/services/mail.service"
 import { handleErrors } from "@/lib/helpers/handle-errors"
-import { siteConfig } from "@/config/site"
+import { authForgetPassSchema } from "@/lib/validations/auth"
+import { rateLimit } from "@/lib/rate-limit"
 
 export async function POST(req: Request) {
   try {
@@ -20,6 +20,7 @@ export async function POST(req: Request) {
     const json = await req.json()
     const data = authForgetPassSchema.parse(json)
 
+    // found if exist user
     const user = await db.user.findUnique({
       where: {
         email: data.email,
@@ -34,16 +35,17 @@ export async function POST(req: Request) {
     })
     if (!user || !user.email) throw new Error("User_not_found")
 
-    // search if any token exists
+    // search if any token exists for this user
     const dataToken = await db.verificationToken.findFirst({
-      where: { identifier: data.email },
+      where: { identifier: data.email, type: TypeEmail.FORGET_PASSWORD },
     })
 
+    // if exists, then checking if due, if not, delete
     if (dataToken) {
-      // if exists, then check if due, if not, delete
       if (dataToken.expires < new Date()) {
         await db.verificationToken.delete({ where: { id: dataToken.id } })
       } else {
+        // TODO: Not allow user to token due, is correct?
         throw new Error("Token_Exists")
       }
     }
@@ -52,24 +54,18 @@ export async function POST(req: Request) {
     const tokenData = await db.verificationToken.create({
       data: {
         identifier: user.email,
-        token: nanoid(12),
-        // type: "FORGET_PASSWORD",
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 5), // 5 hours
+        token: nanoid(16),
+        type: TypeEmail.FORGET_PASSWORD,
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
       },
       select: { id: true, token: true },
     })
 
-    const { error } = await resend.emails.send({
-      from: `${siteConfig.name} <${siteConfig.replyEmail}>`,
-      to: [process.env.NODE_ENV === "development" ? siteConfig.defaultEmail : data.email],
-      subject: `Recuperar Acceso a ${siteConfig.name}`,
-      react: RecoveryPassEmail({ token: tokenData.token, name: user.name }),
-    })
+    // send email
+    const { error } = await sendRecoveryPassEmail(user.id, user.email, tokenData.token, user?.name || "")
 
     if (error) {
       await db.verificationToken.delete({ where: { id: tokenData.id } })
-      await db.user.delete({ where: { id: user.id } })
-
       throw new Error("Email_Error", { cause: error })
     }
 

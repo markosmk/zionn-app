@@ -53,6 +53,13 @@ export const getErrorPrisma = (error: any): { message: string; status: number } 
  */
 export const errorsCodes: Record<string, [string, number]> = {
   User_not_found: ["El Usuario con ese email no existe.", 404],
+  User_not_created: [
+    "No pudimos crear tu usuario en nuestro sistema, intenta de nuevo mas tarde. Si el problema persiste, contactanos.",
+    500,
+  ],
+  User_no_email: ["Hubo un problema al procesar la solicitud, contacta a un administrador.", 404],
+  User_already_verified: ["El usuario ya ha sido verificado.", 404],
+
   Email_Error: [
     "Hubo problemas al enviar el email, intenta de nuevo mas tarde. Si el problema persiste, contactanos.",
     404,

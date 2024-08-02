@@ -8,10 +8,17 @@ export async function POST(req: Request) {
     const json = await req.json()
     const data = authVerifySchema.parse(json)
 
+    const user = await db.user.findUnique({
+      where: { email: data.uid },
+      select: { emailVerified: true, email: true },
+    })
+    if (!user) throw new Error("User_not_found")
+    if (!user.email) throw new Error("User_no_email")
+
     const dataToken = await db.verificationToken.findFirst({
       where: {
-        identifier: data.identifier,
-        token: data.code,
+        identifier: user.email,
+        token: data.tkn,
       },
     })
 

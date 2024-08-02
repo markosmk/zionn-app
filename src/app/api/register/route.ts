@@ -1,14 +1,15 @@
+import { NextResponse } from "next/server"
+import { nanoid } from "nanoid"
+import { TypeEmail } from "@prisma/client"
+
 import { db } from "@/lib/db"
+import { sendVerifyEmail } from "@/services/mail.service"
+
+import { handleErrors } from "@/lib/helpers/handle-errors"
 import { registerSchema } from "@/lib/validations/auth"
 import { saltAndHashPassword } from "@/lib/password"
 import { sanitizeUsername } from "@/lib/utils"
-import { NextResponse } from "next/server"
-import { resend } from "@/lib/resend"
-import { VerifyEmail } from "@/emails/verify-email"
-import { nanoid } from "nanoid"
-import { siteConfig } from "@/config/site"
 import { rateLimit } from "@/lib/rate-limit"
-import { handleErrors } from "@/lib/helpers/handle-errors"
 
 export async function POST(req: Request) {
   try {
@@ -37,26 +38,23 @@ export async function POST(req: Request) {
       },
     })
 
-    const verify = await db.verificationToken.create({
+    if (!user || !user.email) throw new Error("User_not_created")
+
+    const tokenData = await db.verificationToken.create({
       data: {
         identifier: data.identifier,
         token: nanoid(32),
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 5), // 5 hours
+        type: TypeEmail.VERIFY_ACCOUNT,
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
       },
       select: { id: true, token: true },
     })
 
-    const { error } = await resend.emails.send({
-      from: `${siteConfig.name} <${siteConfig.replyEmail}>`,
-      to: [process.env.NODE_ENV === "development" ? siteConfig.defaultEmail : data.identifier],
-      subject: `Confirma tu cuenta en ${siteConfig.name}`,
-      react: VerifyEmail({ token: verify.token, email: data.identifier }),
-    })
+    const { error } = await sendVerifyEmail(user.id, user.email, tokenData.token)
 
     if (error) {
-      await db.verificationToken.delete({ where: { id: verify.id } })
+      await db.verificationToken.delete({ where: { id: tokenData.id } })
       await db.user.delete({ where: { id: user.id } })
-
       throw new Error("Email_Error", { cause: error })
     }
 
